@@ -1,21 +1,27 @@
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 
 class WordReplacer(tk.Tk):
     def request_filename(self):
         return filedialog.askopenfilename(title='Choose a file')
 
     def read_file(self, filename):
-        with open(filename, 'r') as f:
-            return f.read()
+        try:
+            with open(filename, 'r') as f:
+                return f.read()
+        except IOError:
+            messagebox.showerror('Error', 'There was an error loading the file')
 
     def replace_words(self, filedata, word_to_replace, word_replacement):
         return filedata.replace(word_to_replace, word_replacement)
 
     def write_output(self, filedata, new_filename):
-        with open(new_filename, 'w') as f:
-            f.write(filedata)
-            # Handle exceptions
+        try:
+            with open(new_filename, 'w') as f:
+                f.write(filedata)
+        except IOError:
+            messagebox.showerror('Error', 'There was an error saving to the file')
 
     def request_savename(self):
         return filedialog.asksaveasfilename(title='Save new file')
@@ -26,6 +32,7 @@ class WordReplacer(tk.Tk):
     def save_file(self):
         replaced_filedata = self.replace_words(self.filedata, self.word_to_replace.get(), self.word_replacement.get())
         self.write_output(replaced_filedata, self.request_savename())
+        messagebox.showinfo('Success!', 'Successfully replaced word(s)')
 
     def __init__(self):
         tk.Tk.__init__(self)
